@@ -1,0 +1,1 @@
+!pip install tefas-crawler matplotlib numpy pandas yfinance
