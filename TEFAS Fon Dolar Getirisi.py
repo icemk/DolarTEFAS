@@ -142,12 +142,18 @@ def plot_return_bar(df):
         hover_data={"return_to_last": ':.2%'}
     )
     fig.update_layout(
+    title="NNF Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi",
     xaxis=dict(
         type="date",
         tickmode="linear",
-        dtick="86400000",  # 1 day in milliseconds
+        dtick=86400000,  # daily
         tickformat="%Y-%m-%d"
+    ),
+    yaxis=dict(
+        tickformat=".0%",
+        title="Dolar Getirisi (%)"
     )
+)
 )
 
     # The only output is the plot
