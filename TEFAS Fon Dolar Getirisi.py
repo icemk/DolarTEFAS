@@ -130,11 +130,12 @@ def merge_and_compute(tefas_df, usdtry_df):
 # Step E) Plot the Bar Chart (Only Output!)
 ###############################################################################
 def plot_return_bar(df):
-    # Extract fund code from the first row (assuming it's consistent)
+    # Extract fund code from the first row, or "Unknown" if empty
     fund_code = df["code"].iloc[0] if not df.empty else "Unknown"
 
+    # Create a bar chart using the DataFrame passed in (df)
     fig = px.bar(
-        final_data_with_fx,
+        df,
         x='date',
         y='return_to_last',
         labels={
@@ -142,24 +143,24 @@ def plot_return_bar(df):
             'return_to_last': 'Dolar Getirisi (%)'
         },
         title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
-        hover_data={'return_to_last': ':.2%'}  # Show return_to_last as percentage on hover
+        hover_data={'return_to_last': ':.2%'}  # Show return as percentage on hover
     )
+
+    # Force daily ticks on x-axis and format y-axis as %
     fig.update_layout(
-    title="NNF Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi",
-    xaxis=dict(
-        type="date",
-        tickmode="linear",
-        dtick=86400000,  # daily
-        tickformat="%Y-%m-%d"
-    ),
-    yaxis=dict(
-        tickformat=".0%",
-        title="Dolar Getirisi (%)"
+        xaxis=dict(
+            type="date",
+            tickmode="linear",
+            dtick=86400000,  # 1 day in ms
+            tickformat="%Y-%m-%d"
+        ),
+        yaxis=dict(
+            tickformat=".0%",
+            title="Dolar Getirisi (%)"
+        )
     )
-)
 
-
-    # The only output is the plot
+    # Display the plot within Streamlit
     st.plotly_chart(fig)
 
 ###############################################################################
