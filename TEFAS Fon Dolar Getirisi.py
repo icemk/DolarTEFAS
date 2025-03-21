@@ -332,8 +332,8 @@ def main():
 
                     st.write("Detaylı veri tablosu (yıllıklandırılmış getiri hesaplandı):")
                     columns_for_display = [
-                        'date_str',
                         'code',
+                        'date_str',
                         'price',
                         'USDTRY_Close',
                         'USD_price',
@@ -347,7 +347,6 @@ def main():
 
                     # 3) Show the data
                     st.dataframe(df_display)
-                    st.dataframe(df_fund2)
 
                 except Exception as e:
                     st.error(f"Hata: {e}")
