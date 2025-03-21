@@ -262,7 +262,7 @@ def plot_annualized_return_bar(df):
             'date_str': 'Tarih',
             'annualized_return_percent': 'Yıllıklandırılmış Getiri (%)'
         },
-        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Yıllıklandırılmış Getiri',
+        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Yıllıklandırılmış Getirisi',
         hover_data={'annualized_return_percent': ':.1f'}
     )
 
