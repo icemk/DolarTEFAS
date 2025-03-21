@@ -227,10 +227,12 @@ def run_workflow(fund_code):
 
 
 def main():
-    st.title("TEFAS Fonu Dolar Getirisi Hesaplama")
+    st.title("TEFAS - Dolar Getirisi Hesaplama")
     st.write(
-        "Bu uygulama TEFAS'tan fon fiyatlarını, Yahoo Finance'ten dolar kurunu çekip"
-        "seçilen fonun alım tarihlerine göre bugünkü dolar bazlı fon getirisini hesaplar"
+    """
+    Bu uygulama TEFAS'tan fon fiyatlarını, Yahoo Finance'ten dolar kurunu çekip 
+    seçilen fonun alım tarihlerine göre bugünkü dolar bazlı fon getirisini hesaplar
+    """
     )
 
     # User input for the fund code
