@@ -162,7 +162,7 @@ def compute_usd_price_and_return(df):
 
     # Keep 'date' as datetime for potential future calculations
     # Create a separate string column for display
-    df['date_str'] = df['date'].dt.strftime('%Y-%m-%d')
+    df['date'] = df['date'].dt.strftime('%Y-%m-%d')
 
     return df
 
@@ -242,6 +242,7 @@ def compute_annualized_return_percent(df):
     df.loc[mask_30plus, 'annualized_return_percent'] = (
         annualized_fraction[mask_30plus].mul(100).round(1)
     )
+    df['date'] = df['date'].dt.date
 
     return df
 
@@ -331,12 +332,12 @@ def main():
                     st.dataframe(df_fund)
 
                     # --- Compute & Plot Annualized Return ---
-                    df_fund = compute_annualized_return_percent(df_fund)
+                    df_fund2 = compute_annualized_return_percent(df_fund)
                     fig_annual = plot_annualized_return_bar(df_fund)
                     st.plotly_chart(fig_annual, use_container_width=True)
 
                     st.write("Detaylı veri tablosu (yıllıklandırılmış getiri hesaplaması için 30 günlük veri gereklidir):")
-                    st.dataframe(df_fund)
+                    st.dataframe(df_fund2)
 
                 except Exception as e:
                     st.error(f"Hata: {e}")
