@@ -138,7 +138,7 @@ def compute_usd_price_and_return(final_data_with_fx):
     """
     1) USD_price = price / USDTRY_Close
     2) last_valid_usd_price is the last non-zero USD_price
-    3) return_to_last = (last_valid_usd_price / USD_price) - 1
+    3) getiri = (last_valid_usd_price / USD_price) - 1
     """
     # Compute USD price
     final_data_with_fx['USD_price'] = (
@@ -153,25 +153,23 @@ def compute_usd_price_and_return(final_data_with_fx):
     
     if len(valid_prices) == 0:
         # Edge case: no valid USD_price
-        final_data_with_fx['return_to_last'] = None
+        final_data_with_fx['getiri'] = None
         return final_data_with_fx
 
     last_valid_usd_price = valid_prices.iloc[-1]
 
     # Compute relative return vs. last valid price
-    final_data_with_fx['return_to_last'] = (
+    final_data_with_fx['getiri'] = (
         last_valid_usd_price / final_data_with_fx['USD_price'] - 1
     )
 
     # Round for clarity
     final_data_with_fx['USD_price'] = final_data_with_fx['USD_price'].round(4)
-    final_data_with_fx['return_to_last'] = final_data_with_fx['return_to_last'].round(4)
+    final_data_with_fx['getiri'] = final_data_with_fx['getiri'].round(4)
     final_data_with_fx['date'] = final_data_with_fx['date'].dt.strftime('%Y-%m-%d')
 
     # Convert to percentage string with 1 decimal place, then add '%'
-    final_data_with_fx['return_to_last'] = (final_data_with_fx['return_to_last'].apply(lambda x: f"{x*100:.1f}%" if pd.notnull(x) else ""))
-# Rename the column
-    final_data_with_fx.rename(columns={'return_to_last': 'bugünkü getiri'}, inplace=True)
+    final_data_with_fx['getiri'] = (final_data_with_fx['getiri'].apply(lambda x: f"{x*100:.1f}%" if pd.notnull(x) else ""))
     return final_data_with_fx
 
 
@@ -180,7 +178,7 @@ def compute_usd_price_and_return(final_data_with_fx):
 ###############################################################################
 def plot_return_bar(final_data_with_fx):
     """
-    Plot an interactive bar chart of 'return_to_last' vs. 'date' in Plotly.
+    Plot an interactive bar chart of 'getiri' vs. 'date' in Plotly.
     Hover shows date and return in percentage.
     """
     # Extract fund code from first row (assuming consistent code in all rows)
@@ -189,13 +187,13 @@ def plot_return_bar(final_data_with_fx):
     fig = px.bar(
         final_data_with_fx,
         x='date',
-        y='return_to_last',
+        y='getiri',
         labels={
             'date': 'Tarih',
-            'return_to_last': 'Dolar Getirisi (%)'
+            'getiri': 'Dolar Getirisi (%)'
         },
         title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
-        hover_data={'return_to_last': ':.2%'}  # Show return_to_last as percentage on hover
+        hover_data={'getiri': ':.2%'}  # Show getiri as percentage on hover
     )
 
     # Format the y-axis as percentage
