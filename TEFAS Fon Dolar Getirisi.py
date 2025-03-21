@@ -149,8 +149,6 @@ def plot_return_bar(df):
 # Main Script
 ###############################################################################
 def main():    
-    
-    st.title("Dolar bazlı TEFAS fon getirisi hesapla!")
     # Let user enter a TEFAS fund code
     fund_code = st.text_input("Enter the TEFAS fund code:", value="CFO")
     if st.button("Hesapla"):
