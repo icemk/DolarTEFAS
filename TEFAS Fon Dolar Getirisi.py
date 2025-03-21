@@ -322,10 +322,6 @@ def main():
                     st.success("Başarıyla tamamlandı!")
                     st.plotly_chart(fig_total, use_container_width=True)
 
-                    # 2) Show the DataFrame with total_return_percent
-                    st.write("Detaylı veri tablosu (total_return_percent):")
-                    st.dataframe(df_fund)
-
                     # 3) Compute & Plot Annualized Return
                     df_fund2 = df_fund.copy()  # create a copy to avoid overwriting
                     # NOTE: df_fund['date'] is still datetime; date_str is for display
@@ -335,6 +331,22 @@ def main():
                     st.plotly_chart(fig_annual, use_container_width=True)
 
                     st.write("Detaylı veri tablosu (yıllıklandırılmış getiri hesaplandı):")
+                    columns_for_display = [
+                        'date_str',
+                        'code',
+                        'price',
+                        'USDTRY_Close',
+                        'USD_price',
+                        'total_return_percent',
+                        'holding_days',
+                        'annualized_return_percent'
+                    ]
+
+                    # 2) Create a display copy with only those columns:
+                    df_display = df_fund2[columns_for_display]
+
+                    # 3) Show the data
+                    st.dataframe(df_display)
                     st.dataframe(df_fund2)
 
                 except Exception as e:
