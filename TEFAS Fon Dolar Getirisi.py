@@ -231,6 +231,7 @@ def run_workflow(fund_code):
 
 
 def main():
+    st.set_page_config(layout="wide")
     st.title("TEFAS - Dolar Getirisi Hesaplama")
     st.write(
     """
