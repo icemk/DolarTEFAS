@@ -130,29 +130,26 @@ def merge_and_compute(tefas_df, usdtry_df):
 # Step E) Plot the Bar Chart (Only Output!)
 ###############################################################################
 def plot_return_bar(df):
-    # Extract fund code from the first row, or "Unknown" if empty
+    # Extract fund code from the first row (assuming it's consistent)
     fund_code = df["code"].iloc[0] if not df.empty else "Unknown"
 
-    # Create a bar chart using the DataFrame passed in (df)
+    # Make a bar chart, 1 bar per row/day
     fig = px.bar(
         df,
-        x='date',
-        y='return_to_last',
-        labels={
-            'date': 'Tarih',
-            'return_to_last': 'Dolar Getirisi (%)'
-        },
-        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
-        hover_data={'return_to_last': ':.2%'}  # Show return as percentage on hover
+        x="date",
+        y="return_to_last",
+        labels={"date": "Tarih", "return_to_last": "Dolar Getirisi (%)"},
+        title=f"{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi",
+        hover_data={"return_to_last": ':.2%'}
     )
-
-    # Force daily ticks on x-axis and format y-axis as %
+    
+    # Force monthly ticks on the x-axis, but still one bar per day
     fig.update_layout(
         xaxis=dict(
             type="date",
             tickmode="linear",
-            dtick=86400000,  # 1 day in ms
-            tickformat="%Y-%m-%d"
+            dtick="M1",         # One tick per month
+            tickformat="%b %Y"  # Show as "Jan 2024", "Feb 2024", etc.
         ),
         yaxis=dict(
             tickformat=".0%",
@@ -160,7 +157,6 @@ def plot_return_bar(df):
         )
     )
 
-    # Display the plot within Streamlit
     st.plotly_chart(fig)
 
 ###############################################################################
