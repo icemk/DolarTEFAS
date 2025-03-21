@@ -242,7 +242,6 @@ def compute_annualized_return_percent(df):
     df.loc[mask_30plus, 'annualized_return_percent'] = (
         annualized_fraction[mask_30plus].mul(100).round(1)
     )
-    df['date'] = df['date'].dt.date
 
     return df
 
