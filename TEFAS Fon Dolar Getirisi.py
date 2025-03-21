@@ -154,7 +154,7 @@ def plot_return_bar(df):
         title="Dolar Getirisi (%)"
     )
 )
-)
+
 
     # The only output is the plot
     st.plotly_chart(fig)
