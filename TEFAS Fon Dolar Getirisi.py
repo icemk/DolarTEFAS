@@ -141,7 +141,14 @@ def plot_return_bar(df):
         title=f"{fund_code}: Dolar Bazlı Getiri (Son Günle Karşılaştırma)",
         hover_data={"return_to_last": ':.2%'}
     )
-    fig.update_layout(yaxis_tickformat=".0%", xaxis_tickangle=-45)
+    fig.update_layout(
+    xaxis=dict(
+        type="date",
+        tickmode="linear",
+        dtick="86400000",  # 1 day in milliseconds
+        tickformat="%Y-%m-%d"
+    )
+)
 
     # The only output is the plot
     st.plotly_chart(fig)
