@@ -234,7 +234,7 @@ def main():
     )
 
     # User input for the fund code
-    fund_code = st.text_input("TEFAS fonu gir (örneğin "BGP"):", "")
+    fund_code = st.text_input("TEFAS fonu gir (örneğin 'BGP'):", value="BGP")
 
     if st.button("Run"):
         if not fund_code.strip():
