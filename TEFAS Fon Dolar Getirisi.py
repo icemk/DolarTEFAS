@@ -193,12 +193,12 @@ def plot_return_bar(final_data_with_fx):
             'getiri': 'Dolar Getirisi (%)'
         },
         title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
-        hover_data={'getiri': ':.2%'}  # Show getiri as percentage on hover
+        hover_data={'getiri': ':.1'}  # Show getiri as percentage on hover
     )
 
     # Format the y-axis as percentage
     fig.update_layout(
-        yaxis_tickformat=".0%",
+        yaxis_tickformat=".1",
         xaxis_tickangle=-45
     )
     return fig
