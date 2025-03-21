@@ -134,12 +134,15 @@ def plot_return_bar(df):
     fund_code = df["code"].iloc[0] if not df.empty else "Unknown"
 
     fig = px.bar(
-        df,
-        x="date",
-        y="return_to_last",
-        labels={"date": "Date", "return_to_last": "Return to Last (%)"},
-        title=f"{fund_code}: Dolar Bazlı Getiri (Son Günle Karşılaştırma)",
-        hover_data={"return_to_last": ':.2%'}
+        final_data_with_fx,
+        x='date',
+        y='return_to_last',
+        labels={
+            'date': 'Tarih',
+            'return_to_last': 'Dolar Getirisi (%)'
+        },
+        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
+        hover_data={'return_to_last': ':.2%'}  # Show return_to_last as percentage on hover
     )
     fig.update_layout(
     title="NNF Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi",
