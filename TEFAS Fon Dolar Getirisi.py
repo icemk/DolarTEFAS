@@ -166,7 +166,7 @@ def compute_usd_price_and_return(final_data_with_fx):
     # Round for clarity
     final_data_with_fx['USD_price'] = final_data_with_fx['USD_price'].round(4)
     final_data_with_fx['return_to_last'] = final_data_with_fx['return_to_last'].round(4)
-
+    final_data_with_fx['date'] = final_data_with_fx['date'].dt.strftime('%Y-%m-%d')
     return final_data_with_fx
 
 
@@ -230,8 +230,7 @@ def main():
     st.title("TEFAS - Dolar Getirisi Hesaplama")
     st.write(
     """
-    Bu uygulama TEFAS'tan fon fiyatlarını, Yahoo Finance'ten dolar kurunu çekip 
-    seçilen fonun alım tarihlerine göre bugünkü dolar bazlı fon getirisini hesaplar
+    Bu uygulama sayesinde fon yatırımlarınızın dolar bazlı getirisini öğrenebilirsiniz!
     """
     )
 
@@ -249,7 +248,7 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
                     
                     # Optionally show the merged DataFrame
-                    st.write("Detay: Grafik verisi:")
+                    st.write("İlgilenenler için grafik verisi:")
                     st.dataframe(final_data_with_fx)
                 except Exception as e:
                     st.error(f"Hata: {e}")
