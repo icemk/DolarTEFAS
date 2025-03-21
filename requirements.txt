@@ -1,1 +1,5 @@
-!pip install tefas-crawler matplotlib numpy pandas yfinance
+tefas-crawler 
+matplotlib 
+numpy
+pandas
+yfinance
