@@ -32,35 +32,49 @@ def generate_date_list():
     return sorted(set(date_list))
 
 ###############################################################################
-# Step B) (Placeholder) Fetch TEFAS Data for Pairs of Dates
+# 2) Fetch TEFAS Data in Pairs
 ###############################################################################
-def fetch_tefas_data(date_list, fund_code="YAC"):
+def fetch_tefas_data(date_list, fund_code):
     """
-    Replace the placeholder below with your actual `tefas.fetch` logic.
-    This placeholder just returns a sample DataFrame with random prices.
+    For every *pair* of dates in date_list, fetch TEFAS data for [start, end).
+    Returns a single DataFrame.
     """
+    # If using tefas.fetch:
+    # tefas = Crawler()  # or your own instantiation
+    # We'll simulate with a placeholder that returns empty DataFrame
+    # Replace with your real logic.
+
     all_data = []
     for i in range(0, len(date_list) - 1, 2):
-        # Start/end for each pair
         start = date_list[i]
         end = date_list[i + 1]
+        st.write(f"Fetching data from {start} to {end} for fund {fund_code}...")
 
-        # --- Replace with your real call to tefas.fetch ---
+        # Example real code:
+        # data = tefas.fetch(
+        #     start=start,
+        #     end=end,
+        #     name=fund_code,
+        #     columns=["code", "date", "price"]
+        # )
+
+        # Placeholder to demonstrate structure
         data = pd.DataFrame({
             "code": [fund_code],
             "date": [start],
-            "price": [100.0]  # placeholder price
+            "price": [100.0],
         })
-        # ---------------------------------------------------
         all_data.append(data)
 
-    if not all_data:
-        return pd.DataFrame(columns=["code", "date", "price"])
+    if all_data:
+        final_data = pd.concat(all_data, ignore_index=True)
+    else:
+        final_data = pd.DataFrame(columns=["code", "date", "price"])
 
-    final_data = pd.concat(all_data, ignore_index=True)
     final_data["date"] = pd.to_datetime(final_data["date"])
     final_data.sort_values(by="date", inplace=True, ignore_index=True)
     return final_data
+
 
 ###############################################################################
 # Step C) Fetch USD/TRY from Yahoo Finance
