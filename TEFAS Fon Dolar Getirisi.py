@@ -204,76 +204,74 @@ def plot_return_bar(df):
 ########################################################################
 # ANNUALIZED PORTION
 ########################################################################
-def compute_annualized_return_percent(df):
+def compute_usd_price_and_return(df):
     """
-    Compute annualized return for each row based on:
-        annualized_fraction = [(1 + (total_return_percent/100))^(365 / holding_days)] - 1
-    BUT only if holding_days >= 30.
-    Otherwise, set annualized_return_percent to NaN.
+    1) USD_price = price / USDTRY_Close
+    2) last_valid_usd_price is the last non-zero USD_price
+    3) getiri_fraction = (last_valid_usd_price / USD_price) - 1  (fraction form, e.g. 0.12 = +12%)
+    4) Convert getiri_fraction to a numeric percentage => getiri_percent = 12.0
+    """
+    # Compute USD price
+    df['USD_price'] = df['price'] / df['USDTRY_Close']
+
+    # Find the last valid (non-zero, non-NaN) USD_price
+    valid_prices = df.loc[
+        (df['USD_price'].notna()) & (df['USD_price'] > 0),
+        'USD_price'
+    ]
     
-    'total_return_percent' is a numeric percentage column, e.g. 12.3 => +12.3%.
-    """
-    if 'total_return_percent' not in df.columns:
-        raise ValueError("'total_return_percent' column is missing.")
+    if valid_prices.empty:
+        # Edge case: no valid USD_price
+        df['total_return_percent'] = None
+        return df
 
-    # final_date is the last date in df
-    final_date = df['date'].iloc[-1]
+    last_valid_usd_price = valid_prices.iloc[-1]
 
-    # holding_days = # of days from each row's date to final_date
-    df['holding_days'] = (final_date - df['date']).dt.days
+    # Compute fractional return vs. last valid price
+    df['getiri_fraction'] = last_valid_usd_price / df['USD_price'] - 1
 
-    # Avoid division by zero if the row is the final_date
-    df.loc[df['holding_days'] == 0, 'holding_days'] = 1
+    # Convert fraction (e.g. 0.12) to percentage 12.0
+    df['total_return_percent'] = df['getiri_fraction'].mul(100).round(1)
 
-    # Make a mask for rows with holding_days >= 30
-    mask_30plus = df['holding_days'] >= 30
-
-    # Convert total_return_percent to fraction (e.g. 12.3 => 0.123)
-    frac = df['total_return_percent'] / 100.0
-
-    # Calculate annualized return (in fraction form) only for rows with >= 30 days
-    # For others, we'll set it to NaN
-    annualized_fraction = (1 + frac) ** (365 / df['holding_days']) - 1
-
-    # Create a new column, start with all NaN
-    df['annualized_return_percent'] = float('nan')
-
-    # Fill in annualized returns only where holding_days >= 30
-    df.loc[mask_30plus, 'annualized_return_percent'] = (
-        annualized_fraction[mask_30plus].mul(100).round(1)
-    )
+    # Keep 'date' as datetime for annualized calculations
+    # Create a string version for the chart display
+    df['date_str'] = df['date'].dt.strftime('%Y-%m-%d')
 
     return df
 
 
-
-def plot_annualized_return_bar(df):
+###############################################################################
+# 6) PLOT: Total Return Bar
+###############################################################################
+def plot_return_bar(df):
     """
-    Plot an interactive bar chart of 'annualized_return_percent' vs. 'date_str'.
-    - 15.2 => +15.2% annualized
+    Plots 'total_return_percent' vs. 'date_str'.
+    - total_return_percent is numeric (e.g. 12.3 means +12.3%)
     """
     fund_code = df['code'].iloc[0] if 'code' in df.columns else 'Unknown Fund'
 
     fig = px.bar(
         df,
-        x='date',
-        y='annualized_return_percent',
+        x='date_str',               # use the string version on x-axis
+        y='total_return_percent',   # numeric percentage
         labels={
-            'date': 'Tarih',
-            'annualized_return_percent': 'Yıllıklandırılmış Getiri (%)'
+            'date_str': 'Tarih',
+            'total_return_percent': 'Dolar Getirisi (%)'
         },
-        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Yıllıklandırılmış Getirisi',
-        hover_data={'annualized_return_percent': ':.1f'}
+        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
+        hover_data={'total_return_percent': ':.1f'}  # e.g. 12.3
     )
 
     fig.update_layout(
         xaxis_tickangle=-45,
         yaxis=dict(
-            tickformat=".1f",
-            ticksuffix="%"
+            tickformat=".1f",   # e.g. "12.3"
+            ticksuffix="%"      # => "12.3%"
         )
     )
+
     return fig
+
 
 
 ###############################################################################
