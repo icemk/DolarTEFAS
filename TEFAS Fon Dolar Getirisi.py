@@ -327,7 +327,7 @@ def main():
                     st.plotly_chart(fig_total, use_container_width=True)
 
                     # Display the DataFrame with total_return_percent
-                    st.write("Detaylı veri tablosu (Total Return % sütunu içerir):")
+                    st.write("Detaylı veri tablosu:")
                     st.dataframe(df_fund)
 
                     # --- Compute & Plot Annualized Return ---
@@ -335,7 +335,7 @@ def main():
                     fig_annual = plot_annualized_return_bar(df_fund)
                     st.plotly_chart(fig_annual, use_container_width=True)
 
-                    st.write("Final DataFrame columns (annualized_return_percent eklendi):")
+                    st.write("Detaylı veri tablosu (yıllıklandırılmış getiri hesaplaması için 30 günlük veri gereklidir):")
                     st.dataframe(df_fund)
 
                 except Exception as e:
