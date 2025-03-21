@@ -167,6 +167,11 @@ def compute_usd_price_and_return(final_data_with_fx):
     final_data_with_fx['USD_price'] = final_data_with_fx['USD_price'].round(4)
     final_data_with_fx['return_to_last'] = final_data_with_fx['return_to_last'].round(4)
     final_data_with_fx['date'] = final_data_with_fx['date'].dt.strftime('%Y-%m-%d')
+
+    # Convert to percentage string with 1 decimal place, then add '%'
+    final_data_with_fx['return_to_last'] = (final_data_with_fx['return_to_last'].apply(lambda x: f"{x*100:.1f}%" if pd.notnull(x) else ""))
+# Rename the column
+    final_data_with_fx.rename(columns={'return_to_last': 'bugünkü getiri'}, inplace=True)
     return final_data_with_fx
 
 
