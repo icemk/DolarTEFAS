@@ -204,6 +204,72 @@ def plot_return_bar(final_data_with_fx):
     return fig
 
 
+########################################################################
+# ANNUALIZED PORTION
+########################################################################
+def compute_annualized_return_percent(df_fund):
+    """
+    Compute annualized return for each row based on:
+        annualized_return = [(1 + TR_fraction)^(365 / holding_days)] - 1
+    where:
+      - 'total_return_percent' is the total return in percent, e.g. 12.3 for +12.3%
+      - 'date' is the date of purchase
+      - holding_days = (final_date - current_row_date).days
+    The result is stored in 'annualized_return_percent' as a percentage, e.g. 15.0 for +15.0%.
+    """
+    if 'total_return_percent' not in df_fund.columns:
+        raise ValueError("'total_return_percent' column is missing. Please rename or create it first.")
+
+    # Final date is the *last* date in df_fund
+    final_date = df_fund['date'].iloc[-1]
+
+    # Number of days from each row’s date to the final date
+    df_fund['holding_days'] = (final_date - df_fund['date']).dt.days
+
+    # Avoid division by zero if the row is the final_date
+    df_fund.loc[df_fund['holding_days'] == 0, 'holding_days'] = 1
+
+    # Convert the total_return_percent to a fraction, e.g. 12.3 => 0.123
+    total_return_fraction = df_fund['total_return_percent'] / 100.0
+
+    # Compute annualized return in fraction form
+    annualized_return_fraction = (1 + total_return_fraction) ** (365 / df_fund['holding_days']) - 1
+
+    # Convert fraction back to a percentage, e.g. 0.15 => 15.0
+    df_fund['annualized_return_percent'] = annualized_return_fraction * 100
+
+    return df_fund
+
+
+def plot_annualized_return_bar(df_fund):
+    """
+    Plot an interactive bar chart of 'annualized_return_percent' vs. 'date'.
+    - 'annualized_return_percent': e.g. 15.2 => +15.2% annualized
+    """
+    fund_code = df_fund['code'].iloc[0] if 'code' in df_fund.columns else 'Unknown Fund'
+
+    fig = px.bar(
+        df_fund,
+        x='date',
+        y='annualized_return_percent',
+        labels={
+            'date': 'Tarih',
+            'annualized_return_percent': 'Yıllıklandırılmış Getiri (%)'
+        },
+        title=f'{fund_code} Fonunun Alım Tarihlerine Göre Yıllıklandırılmış Getiri (Yüzde)',
+        hover_data={'annualized_return_percent': ':.1f'}  # show 1 decimal place
+    )
+
+    fig.update_layout(
+        xaxis_tickangle=-45,
+        yaxis=dict(
+            tickformat=".1f",  # numeric + 1 decimal
+            ticksuffix="%"     # "12.3%"
+        )
+    )
+    return fig
+
+
 
 ###############################################################################
 # 7) Streamlit App
@@ -255,9 +321,19 @@ def main():
                     # Optionally show the merged DataFrame
                     st.write("İlgilenenler için grafik verisi:")
                     st.dataframe(final_data_with_fx)
+
+                    df_fund = compute_annualized_return_percent(df_fund)
+
+                    # 3) Show the annualized return chart
+                    fig_annual = plot_annualized_return_bar(df_fund)
+                    st.plotly_chart(fig_annual, use_container_width=True)
+                
+                    # Optionally show the DataFrame
+                    st.write("Final DataFrame columns:")
+                    st.dataframe(df_fund)
                 except Exception as e:
                     st.error(f"Hata: {e}")
-
+    
 
 if __name__ == "__main__":
     main()
