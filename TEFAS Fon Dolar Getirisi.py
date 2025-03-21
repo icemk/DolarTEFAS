@@ -144,7 +144,7 @@ def plot_return_bar(df):
     fig.update_layout(yaxis_tickformat=".0%", xaxis_tickangle=-45)
 
     # The only output is the plot
-    fig.show()
+    st.plotly_chart(fig)
 
 ###############################################################################
 # Main Script
