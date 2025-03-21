@@ -137,37 +137,35 @@ def merge_data(final_data, usdtry_close_df):
 def compute_usd_price_and_return(df):
     """
     1) USD_price = price / USDTRY_Close
-    2) last_valid_usd_price is the last non-zero USD_price
-    3) getiri_fraction = (last_valid_usd_price / USD_price) - 1  (fraction form, e.g. 0.12 = +12%)
-    4) Convert getiri_fraction to a numeric percentage => getiri_percent = 12.0
+    2) last_valid_usd_price is the last valid USD_price
+    3) fractional_return = (last_valid_usd_price / USD_price) - 1
+    4) total_return_percent = fractional_return * 100
     """
-    # Compute USD price
     df['USD_price'] = df['price'] / df['USDTRY_Close']
 
     # Find the last valid (non-zero, non-NaN) USD_price
     valid_prices = df.loc[
-        (df['USD_price'].notna()) & (df['USD_price'] > 0),
+        df['USD_price'].notna() & (df['USD_price'] > 0),
         'USD_price'
     ]
-    
     if valid_prices.empty:
-        # Edge case: no valid USD_price
         df['total_return_percent'] = None
         return df
 
     last_valid_usd_price = valid_prices.iloc[-1]
 
-    # Compute fractional return vs. last valid price
-    df['getiri_fraction'] = last_valid_usd_price / df['USD_price'] - 1
+    # Compute fractional return
+    fractional_return = last_valid_usd_price / df['USD_price'] - 1
 
-    # Convert fraction (e.g. 0.12) to percentage 12.0
-    df['total_return_percent'] = df['getiri_fraction'].mul(100).round(1)
+    # Convert fraction -> percentage (e.g. 0.12 -> 12.0)
+    df['total_return_percent'] = fractional_return.mul(100).round(1)
 
-    # Keep 'date' as datetime for annualized calculations
-    # Create a string version for the chart display
+    # Keep 'date' as datetime for potential future calculations
+    # Create a separate string column for display
     df['date_str'] = df['date'].dt.strftime('%Y-%m-%d')
 
     return df
+
 
 
 ###############################################################################
@@ -210,7 +208,10 @@ def compute_annualized_return_percent(df):
     """
     Compute annualized return for each row based on:
         annualized_fraction = [(1 + (total_return_percent/100))^(365 / holding_days)] - 1
-    Then store it as 'annualized_return_percent', e.g. 15.0 => +15.0% per year.
+    BUT only if holding_days >= 30.
+    Otherwise, set annualized_return_percent to NaN.
+    
+    'total_return_percent' is a numeric percentage column, e.g. 12.3 => +12.3%.
     """
     if 'total_return_percent' not in df.columns:
         raise ValueError("'total_return_percent' column is missing.")
@@ -221,16 +222,29 @@ def compute_annualized_return_percent(df):
     # holding_days = # of days from each row's date to final_date
     df['holding_days'] = (final_date - df['date']).dt.days
 
-    # Avoid division by zero for the final row (if date == final_date)
+    # Avoid division by zero if the row is the final_date
     df.loc[df['holding_days'] == 0, 'holding_days'] = 1
 
-    # Convert to fraction. E.g. 12.3 => 0.123
+    # Make a mask for rows with holding_days >= 30
+    mask_30plus = df['holding_days'] >= 30
+
+    # Convert total_return_percent to fraction (e.g. 12.3 => 0.123)
     frac = df['total_return_percent'] / 100.0
 
+    # Calculate annualized return (in fraction form) only for rows with >= 30 days
+    # For others, we'll set it to NaN
     annualized_fraction = (1 + frac) ** (365 / df['holding_days']) - 1
-    df['annualized_return_percent'] = (annualized_fraction * 100).round(1)
+
+    # Create a new column, start with all NaN
+    df['annualized_return_percent'] = float('nan')
+
+    # Fill in annualized returns only where holding_days >= 30
+    df.loc[mask_30plus, 'annualized_return_percent'] = (
+        annualized_fraction[mask_30plus].mul(100).round(1)
+    )
 
     return df
+
 
 
 def plot_annualized_return_bar(df):
