@@ -48,7 +48,6 @@ def fetch_tefas_data(date_list, fund_code):
     for i in range(0, len(date_list) - 1, 2):
         start = date_list[i]
         end = date_list[i + 1]
-        st.write(f"Fetching data from {start} to {end} for fund {fund_code}...")
 
         # Example real code:
         # data = tefas.fetch(
@@ -149,21 +148,26 @@ def plot_return_bar(df):
 ###############################################################################
 # Main Script
 ###############################################################################
-def main():
+def main():    
+    
+    st.title("Dolar bazlı TEFAS fon getirisi hesapla!")
+    # Let user enter a TEFAS fund code
+    fund_code = st.text_input("Enter the TEFAS fund code:", value="CFO")
+    if st.button("Hesapla"):
     # 1) Generate the custom date list
-    date_list = generate_date_list()
+        date_list = generate_date_list()
 
     # 2) Fetch TEFAS data
-    tefas_data = fetch_tefas_data(date_list, fund_code="YAC")  # or "ZZL", etc.
+        tefas_data = fetch_tefas_data(date_list, fund_code)  # or "ZZL", etc.
 
     # 3) Fetch USD/TRY from Yahoo
-    usdtry_df = fetch_usdtry_data(date_list)
+        usdtry_df = fetch_usdtry_data(date_list)
 
     # 4) Merge, compute USD-based returns
-    final_df = merge_and_compute(tefas_data, usdtry_df)
+        final_df = merge_and_compute(tefas_data, usdtry_df)
 
     # 5) Plot the bar chart (only output)
-    plot_return_bar(final_df)
+        plot_return_bar(final_df)
 
 if __name__ == "__main__":
     main()
