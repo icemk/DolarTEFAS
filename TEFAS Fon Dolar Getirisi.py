@@ -180,10 +180,10 @@ def plot_return_bar(df):
 
     fig = px.bar(
         df,
-        x='date_str',               # use the string version on x-axis
+        x='date',               # use the string version on x-axis
         y='total_return_percent',   # numeric percentage
         labels={
-            'date_str': 'Tarih',
+            'date': 'Tarih',
             'total_return_percent': 'Dolar Getirisi (%)'
         },
         title=f'{fund_code} Fonunun Alım Tarihlerine Göre Bugünkü Dolar Bazlı Getirisi',
