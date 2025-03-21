@@ -227,30 +227,30 @@ def run_workflow(fund_code):
 
 
 def main():
-    st.title("TEFAS Fund Return Tracker (USD Basis)")
+    st.title("TEFAS Fonu Dolar Getirisi Hesaplama")
     st.write(
-        "This app fetches data from the TEFAS system and USD/TRY exchange rates "
-        "from Yahoo Finance, then calculates the USD-based return for a chosen fund."
+        "Bu uygulama TEFAS'tan fon fiyatlarını, Yahoo Finance'ten dolar kurunu çekip"
+        "seçilen fonun alım tarihlerine göre bugünkü dolar bazlı fon getirisini hesaplar"
     )
 
     # User input for the fund code
-    fund_code = st.text_input("Enter the TEFAS fund code (e.g., 'TFRKL' for a sample):", "")
+    fund_code = st.text_input("TEFAS fonu gir (örneğin "BGP"):", "")
 
     if st.button("Run"):
         if not fund_code.strip():
-            st.warning("Please enter a fund code.")
+            st.warning("Lütfen fon kodu girin.")
         else:
-            with st.spinner("Fetching data and generating plot..."):
+            with st.spinner("Hesaplanıyor..."):
                 try:
                     final_data_with_fx, fig = run_workflow(fund_code)
-                    st.success("Data fetched successfully!")
+                    st.success("Başarıyla tamamlandı!")
                     st.plotly_chart(fig, use_container_width=True)
                     
                     # Optionally show the merged DataFrame
-                    st.write("Below is the merged DataFrame with USD-based calculations:")
+                    st.write("Detay: Grafik verisi:")
                     st.dataframe(final_data_with_fx)
                 except Exception as e:
-                    st.error(f"An error occurred: {e}")
+                    st.error(f"Hata: {e}")
 
 
 if __name__ == "__main__":
