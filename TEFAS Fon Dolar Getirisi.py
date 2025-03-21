@@ -257,10 +257,10 @@ def plot_annualized_return_bar(df):
 
     fig = px.bar(
         df,
-        x='date_str',
+        x='date',
         y='annualized_return_percent',
         labels={
-            'date_str': 'Tarih',
+            'date': 'Tarih',
             'annualized_return_percent': 'Yıllıklandırılmış Getiri (%)'
         },
         title=f'{fund_code} Fonunun Alım Tarihlerine Göre Yıllıklandırılmış Getirisi',
